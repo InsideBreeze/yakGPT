@@ -1,3 +1,4 @@
+import * as React from 'react'
 import {
   clearChats,
   deleteChat,
@@ -39,6 +40,8 @@ import { useRef, useState } from "react";
 import ClearChatsButton from "./ClearChatsButton";
 import KeyModal from "./KeyModal";
 import SettingsModal from "./SettingsModal";
+import Link from 'next/link'
+import { Chat } from '@/stores/Chat';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -129,7 +132,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export default function NavbarSimple() {
+function NavbarSimple({ chats  }: { chats: Chat[] }) {
   const { classes, cx, theme } = useStyles();
 
   const router = useRouter();
@@ -144,7 +147,6 @@ export default function NavbarSimple() {
   const [openedTitleModal, { open: openTitleModal, close: closeTitleModal }] =
     useDisclosure(false);
 
-  const chats = useChatStore((state) => state.chats);
   const navOpened = useChatStore((state) => state.navOpened);
 
   const [editedTitle, setEditedTitle] = useState("");
@@ -153,7 +155,6 @@ export default function NavbarSimple() {
   const Icon = colorScheme === "dark" ? IconSun : IconMoon;
 
   const isSmall = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
-
   const links = chats.map((chat) => (
     <Group
       position="apart"
@@ -166,14 +167,12 @@ export default function NavbarSimple() {
             : "linear-gradient(to right, black 80%, transparent 110%)",
       }}
     >
-      <a
+      <Link
         className={cx(classes.link, {
           [classes.linkActive]: chat.id === activeChatId,
         })}
-        href="#"
+        href={`/chat/${chat.id}`}
         onClick={(event) => {
-          event.preventDefault();
-          router.push(`/chat/${chat.id}`);
           if (isSmall) {
             setNavOpened(false);
           }
@@ -184,16 +183,14 @@ export default function NavbarSimple() {
             {chat.title || "Untitled"}
           </Text>
         </Box>
-      </a>
+      </Link>
       {chat.id === activeChatId && (
         <>
           <Tooltip label={t("Delete")} withArrow position="right">
-            <a
-              href="#"
+            <Link
+              href="/"
               onClick={(event) => {
-                event.preventDefault();
                 deleteChat(chat.id);
-                router.push("/");
               }}
               style={{
                 position: "absolute",
@@ -213,11 +210,10 @@ export default function NavbarSimple() {
               >
                 <IconTrash size={px("0.8rem")} stroke={1.5} />
               </ActionIcon>
-            </a>
+            </Link>
           </Tooltip>
           <Tooltip label={t("Edit")} withArrow position="right">
-            <a
-              href="#"
+            <span
               onClick={(event) => {
                 event.preventDefault();
                 openTitleModal();
@@ -235,7 +231,7 @@ export default function NavbarSimple() {
               <ActionIcon variant="default" size={18}>
                 <IconEdit size={px("0.8rem")} stroke={1.5} />
               </ActionIcon>
-            </a>
+            </span>
           </Tooltip>
         </>
       )}
@@ -263,13 +259,9 @@ export default function NavbarSimple() {
     >
       <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
         <Navbar.Section className={classes.header}>
-          <a
-            href="#"
+          <Link
+            href="/"
             className={classes.link}
-            onClick={(event) => {
-              event.preventDefault();
-              router.push("/");
-            }}
           >
             <IconPlus className={classes.linkIcon} stroke={1.5} />
             <span>{t("New Chat")}</span>
@@ -282,7 +274,7 @@ export default function NavbarSimple() {
                 mr="xl"
               />
             </MediaQuery>
-          </a>
+          </Link>
         </Navbar.Section>
       </MediaQuery>
 
@@ -388,3 +380,5 @@ export default function NavbarSimple() {
     </Navbar>
   );
 }
+
+export default React.memo(NavbarSimple, (prevProps, props) => prevProps.chats.length === props.chats.length)

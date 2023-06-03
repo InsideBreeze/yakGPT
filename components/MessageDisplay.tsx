@@ -1,6 +1,6 @@
 import type { Message } from "@/stores/Message";
 import * as React from 'react'
-import ReactMarkdown from 'react-markdown'
+import { MemoizedReactMarkdown } from './MemoizedReactMarkdown'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import remarkGfm from 'remark-gfm'
@@ -33,28 +33,15 @@ const useStyles = createStyles((theme: MantineTheme) => ({
         [`@media (min-width: ${theme.breakpoints.md})`]: {
             maxWidth: "calc(820px - 120px)",
         },
-        marginLeft: "0.5rem",
+        marginLeft: theme.spacing.md,
+        marginRight: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        lineHeight: '1.5rem'
-
-    },
-    // This is implemented in the most horrible way and needs a FF bad
-    copyText: {
-        "&::before": {
-            content: '"copy"',
-            fontSize: 14,
-            opacity: 0.6,
-        },
-        "&:active": {
-            "&::before": {
-                content: '"copied!"',
-                fontSize: 14,
-                opacity: 0.6,
-            },
+        "& p": {
+            margin: '0px',
+            lineHeight: '1.55rem'
         },
     },
-
     table: {
         width: "100%",
         minWidth: "50%",
@@ -129,13 +116,12 @@ const MessageDisplay = ({ message }: Props) => {
     const { classes, cx } = useStyles();
     const isBotReply = message.role === 'assistant'
 
-    console.log(message, 'message')
 
     return (
         <div className={cx(classes.container, { [classes.loading]: message.loading })}>
             {
                 isBotReply ? (
-                    <ReactMarkdown
+                    <MemoizedReactMarkdown
                         remarkPlugins={[remarkMath, remarkGfm]}
                         rehypePlugins={[rehypeKatex]}
                         components={{
@@ -159,7 +145,7 @@ const MessageDisplay = ({ message }: Props) => {
                         }}
                     >
                         {message.content}
-                    </ReactMarkdown>
+                    </MemoizedReactMarkdown>
                 ) : (
                     <div>
                         {message.content}

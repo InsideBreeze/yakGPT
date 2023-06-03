@@ -32,8 +32,7 @@ const ClearChatsButton: React.FC<Props> = ({ clearHandler, classes }) => {
   };
 
   return (
-    <a
-      href="#"
+    <span
       className={classes.link}
       onClick={clickHandler}
       onBlur={cancelConfirmation}
@@ -49,7 +48,7 @@ const ClearChatsButton: React.FC<Props> = ({ clearHandler, classes }) => {
           <span>{t("Clear Chats")}</span>
         </>
       )}
-    </a>
+    </span>
   );
 };
 

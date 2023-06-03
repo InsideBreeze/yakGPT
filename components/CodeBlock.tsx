@@ -29,6 +29,7 @@ const CodeBlock = ({ language, message }: Props) => {
     const { classes } = useStyles()
 
     const [isCopied, setIsCopied] = React.useState(false)
+    console.log(message, 'message')
 
     const handleClickCopy = () => {
         const clipboard = navigator.clipboard
